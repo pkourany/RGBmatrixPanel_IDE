@@ -7,8 +7,12 @@ Arduino library for Adafruit 16x32 and 32x32 RGB LED matrix panels.
 
 Adapted for Spark by Paul Kourany, June 2014
 
+Components Required
+---
 This library requires the Adafruit_mfGFX and SparkIntervalTimer libraries
 
+Wiring
+---
 Wiring between the Spark and 16x32 or 32x32 display is as follows:
 
 16x32 Pin		Spark Pin
