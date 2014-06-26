@@ -7,6 +7,16 @@ Arduino library for Adafruit 16x32 and 32x32 RGB LED matrix panels.
 
 Adapted for Spark by Paul Kourany, June 2014
 
+Spark Adaptation
+---
+The orginal Arduino library used a lot of direct I/O port write tricks and
+assembler to achieve a calculated 283Hz refresh rate for a 16x32 panel.
+
+The current Spark version uses bit-banging for the output which could be
+optimized using inline assembler and full GPIO port writing.  This may be
+added in the next release.  As it stands the calculated refresh rate for
+a 16x32 panel is 90Hz.
+
 Components Required
 ---
 This library requires the Adafruit_mfGFX and SparkIntervalTimer libraries
