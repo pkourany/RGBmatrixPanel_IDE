@@ -15,6 +15,7 @@ Wiring
 ---
 Wiring between the Spark and 16x32 or 32x32 display is as follows:
 
+```
 16x32 Pin		Spark Pin
 --------------------------
   GND				GND
@@ -31,6 +32,7 @@ Wiring between the Spark and 16x32 or 32x32 display is as follows:
   R2				D3				
   G2				D4				
   B2				D5				
+```
 
 The display needs its own 5V supply.
 
