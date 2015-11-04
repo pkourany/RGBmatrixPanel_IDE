@@ -9,7 +9,7 @@
 
 
 #include "Adafruit_mfGFX/Adafruit_mfGFX.h"   // Core graphics library
-#include "RGBmatrixPanel.h" // Hardware-specific library
+#include "RGBmatrixPanel/RGBmatrixPanel.h" // Hardware-specific library
 #include "math.h"
 
 

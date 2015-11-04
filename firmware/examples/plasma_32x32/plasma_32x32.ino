@@ -8,7 +8,7 @@
 
 
 #include "Adafruit_mfGFX/Adafruit_mfGFX.h"   // Core graphics library
-#include "RGBmatrixPanel.h" // Hardware-specific library
+#include "RGBmatrixPanel/RGBmatrixPanel.h" // Hardware-specific library
 #include "math.h"
 
 
@@ -102,7 +102,7 @@ void loop() {
       value = hueShift
         + (int8_t)sinetab[(uint8_t)((x1 * x1 + y1 * y1) >> 2)]
         + (int8_t)sinetab[(uint8_t)((x2 * x2 + y2 * y2) >> 2)]
-        + (int8_t)sinetab[(uint8_t)((x3 * x3 + y3 * y3) >> 3))
+        + (int8_t)sinetab[(uint8_t)((x3 * x3 + y3 * y3) >> 3)]
         + (int8_t)sinetab[(uint8_t)((x4 * x4 + y4 * y4) >> 3)];
       matrix.drawPixel(x, y, matrix.ColorHSV(value * 3, 255, 255, true));
       x1--; x2--; x3--; x4--;

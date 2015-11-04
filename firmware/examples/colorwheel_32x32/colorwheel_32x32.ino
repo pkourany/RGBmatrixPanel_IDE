@@ -8,8 +8,10 @@
 
 
 #include "Adafruit_mfGFX/Adafruit_mfGFX.h"   // Core graphics library
-#include "RGBmatrixPanel.h" // Hardware-specific library
+#include "RGBmatrixPanel/RGBmatrixPanel.h" // Hardware-specific library
 #include "math.h"
+
+#define PI  3.14159265
 
 
 /** Define RGB matrix panel GPIO pins **/
