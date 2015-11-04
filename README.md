@@ -9,7 +9,14 @@ Adapted for Spark by Paul Kourany, June 2014
 
 Updated for Particle Photon, Sept 2015
 
-Core Adaptation
+
+Particle Photon Adaptation
+---
+The Photon version only uses bit-banging due to the GPIO pin mapping not
+allocating enough pin on a single port.  However, with the Photon's 120MHz
+clock, the refresh rate is 140Hz
+
+Particle Core Adaptation
 ---
 The orginal Arduino library used a lot of direct I/O port write tricks and
 assembler to achieve a calculated 283Hz refresh rate for a 16x32 panel.
@@ -19,10 +26,6 @@ write for the output which could be optimized using inline assembler.  As it
 stands the calculated refresh rate for a 16x32 panel using the bit-banged
 version is 90Hz while the (partial) port write version is 140Hz (half those
 values on 32x32 panel).
-
-The Photon version only uses bit-banging due to the GPIO pin mapping not
-allocating enough pin on a single port.  However, with the Photon's 120MHz
-clock, the refresh rate is 140Hz
 
 Components Required
 ---
