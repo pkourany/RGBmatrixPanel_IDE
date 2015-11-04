@@ -6,43 +6,40 @@
 // for Adafruit Industries.
 // BSD license, all text above must be included in any redistribution.
 
-#define SPARK	1	// !!!!!!!!!!! TEMPORARY !!!!!!!!!
-
-#if defined(SPARK)
 #include "Adafruit_mfGFX/Adafruit_mfGFX.h"   // Core graphics library
 #include "RGBmatrixPanel.h" // Hardware-specific library
 #include "math.h"
-#else
-#include <avr/pgmspace.h>
-#include <Adafruit_GFX.h>   // Core graphics library
-#include <RGBmatrixPanel.h> // Hardware-specific library
+
+
+/** Define RGB matrix panel GPIO pins **/
+#if defined (STM32F10X_MD)	//Core
+	#define CLK D6
+	#define OE  D7
+	#define LAT A4
+	#define A   A0
+	#define B   A1
+	#define C   A2
+	#define D	A3		// Only used for 32x32 panels
 #endif
 
-#if defined(SPARK)
- #define CLK D6
- #define OE  D7
- #define LAT A3
- #define A   A0
- #define B   A1
- #define C   A2
-#else
- #define CLK 8  // MUST be on PORTB! (Use pin 11 on Mega)
- #define LAT A3
- #define OE  9
- #define A   A0
- #define B   A1
- #define C   A2
+#if defined (STM32F2XX)	//Photon
+	#define CLK D6
+	#define OE  D7
+	#define LAT A4
+	#define A   A0
+	#define B   A1
+	#define C   A2
+	#define D	A3		// Only used for 32x32 panels
 #endif
+/****************************************/
 
 // Last parameter = 'true' enables double-buffering, for flicker-free,
 // buttery smooth animation.  Note that NOTHING WILL SHOW ON THE DISPLAY
 // until the first call to swapBuffers().  This is normal.
 RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, true);
-// Double-buffered mode consumes nearly all the RAM available on the
-// Arduino Uno -- only a handful of free bytes remain.  Even the
-// following string needs to go in PROGMEM:
 
-const char str[] PROGMEM = "Adafruit 16x32 RGB LED Matrix";
+
+const char str[] = "Adafruit 16x32 RGB LED Matrix";
 int    textX   = matrix.width(),
        textMin = sizeof(str) * -12,
        hue     = 0;
@@ -51,7 +48,7 @@ int8_t ball[3][4] = {
   { 17, 15,  1, -1 },
   { 27,  4, -1,  1 }
 };
-static const uint16_t PROGMEM ballcolor[3] = {
+static const uint16_t ballcolor[3] = {
   0x0080, // Green=1
   0x0002, // Blue=1
   0x1000  // Red=1
@@ -72,7 +69,7 @@ void loop() {
   // Bounce three balls around
   for(i=0; i<3; i++) {
     // Draw 'ball'
-    matrix.fillCircle(ball[i][0], ball[i][1], 5, pgm_read_word(&ballcolor[i]));
+    matrix.fillCircle(ball[i][0], ball[i][1], 5, ballcolor[i]);
     // Update X, Y position
     ball[i][0] += ball[i][2];
     ball[i][1] += ball[i][3];
@@ -86,7 +83,7 @@ void loop() {
   // Draw big scrolly text on top
   matrix.setTextColor(matrix.ColorHSV(hue, 255, 255, true));
   matrix.setCursor(textX, 1);
-  matrix.print(F2(str));
+  matrix.print(str);
 
   // Move text left (w/wrap), increase hue
   if((--textX) < textMin) textX = matrix.width();

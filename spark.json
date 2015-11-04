@@ -1,7 +1,7 @@
 {
 	"name": "RGBmatrixPanel",
 	"author": "Paul Kourany / Adafruit",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"license": "BSD license",
-	"description": "Adafruit 16x32 & 32x32 RGB matrix Panel library for Spark"
+	"description": "Adafruit 16x32 & 32x32 RGB matrix Panel library for Particle"
 }

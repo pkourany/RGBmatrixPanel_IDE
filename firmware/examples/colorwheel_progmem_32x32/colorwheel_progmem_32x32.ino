@@ -9,45 +9,35 @@
 // for Adafruit Industries.
 // BSD license, all text above must be included in any redistribution.
 
-#define SPARK	1	// !!!!!!!!!!! TEMPORARY !!!!!!!!!
 
-#if defined(SPARK)
 #include "Adafruit_mfGFX/Adafruit_mfGFX.h"   // Core graphics library
 #include "RGBmatrixPanel.h" // Hardware-specific library
 #include "math.h"
-#else
-#include <avr/pgmspace.h>
-#include <Adafruit_GFX.h>   // Core graphics library
-#include <RGBmatrixPanel.h> // Hardware-specific library
+#include "image.h"
+
+
+/** Define RGB matrix panel GPIO pins **/
+#if defined (STM32F10X_MD)	//Core
+	#define CLK D6
+	#define OE  D7
+	#define LAT A4
+	#define A   A0
+	#define B   A1
+	#define C   A2
+	#define D	A3		// Only used for 32x32 panels
 #endif
 
-#if defined(SPARK)
- #define CLK D6
- #define OE  D7
- #define LAT A4
- #define A   A0
- #define B   A1
- #define C   A2
- #define D	 A3
-#else
-// If your 32x32 matrix has the SINGLE HEADER input,
-// use this pinout:
-#define CLK 8  // MUST be on PORTB! (Use pin 11 on Mega)
-#define OE  9
-#define LAT 10
-#define A   A0
-#define B   A1
-#define C   A2
-#define D   A3
-// If your matrix has the DOUBLE HEADER input, use:
-//#define CLK 8  // MUST be on PORTB! (Use pin 11 on Mega)
-//#define LAT 9
-//#define OE  10
-//#define A   A3
-//#define B   A2
-//#define C   A1
-//#define D   A0
+#if defined (STM32F2XX)	//Photon
+	#define CLK D6
+	#define OE  D7
+	#define LAT A4
+	#define A   A0
+	#define B   A1
+	#define C   A2
+	#define D	A3		// Only used for 32x32 panels
 #endif
+/****************************************/
+
 
 RGBmatrixPanel matrix(A, B, C, D, CLK, LAT, OE, false);
 
@@ -55,8 +45,8 @@ void setup() {
   int     i, len;
   uint8_t *ptr = matrix.backBuffer(); // Get address of matrix data
 
-  // Copy image from PROGMEM to matrix buffer:
-  memcpy_P(ptr, img, sizeof(img));
+  // Copy image from image to matrix buffer:
+  memcpy(ptr, img, sizeof(img));
 
   // Start up matrix AFTER data is copied.  The RGBmatrixPanel
   // interrupt code ties up about 40% of the CPU time, so starting

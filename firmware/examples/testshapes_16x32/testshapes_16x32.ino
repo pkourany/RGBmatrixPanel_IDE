@@ -7,33 +7,34 @@
 // for Adafruit Industries.
 // BSD license, all text above must be included in any redistribution.
 
-#define SPARK	1	// !!!!!!!!!!! TEMPORARY !!!!!!!!!
 
-#if defined(SPARK)
 #include "Adafruit_mfGFX/Adafruit_mfGFX.h"   // Core graphics library
 #include "RGBmatrixPanel.h" // Hardware-specific library
 #include "math.h"
-#else
-#include <avr/pgmspace.h>
-#include <Adafruit_GFX.h>   // Core graphics library
-#include <RGBmatrixPanel.h> // Hardware-specific library
+
+
+/** Define RGB matrix panel GPIO pins **/
+#if defined (STM32F10X_MD)	//Core
+	#define CLK D6
+	#define OE  D7
+	#define LAT A4
+	#define A   A0
+	#define B   A1
+	#define C   A2
+	#define D	A3		// Only used for 32x32 panels
 #endif
 
-#if defined(SPARK)
- #define CLK D6
- #define OE  D7
- #define LAT A3
- #define A   A0
- #define B   A1
- #define C   A2
-#else
- #define CLK 8  // MUST be on PORTB! (Use pin 11 on Mega)
- #define LAT A3
- #define OE  9
- #define A   A0
- #define B   A1
- #define C   A2
+#if defined (STM32F2XX)	//Photon
+	#define CLK D6
+	#define OE  D7
+	#define LAT A4
+	#define A   A0
+	#define B   A1
+	#define C   A2
+	#define D	A3		// Only used for 32x32 panels
 #endif
+/****************************************/
+
 
 RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, false);
 

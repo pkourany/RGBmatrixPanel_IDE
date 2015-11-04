@@ -6,40 +6,41 @@
 // for Adafruit Industries.
 // BSD license, all text above must be included in any redistribution.
 
-#define SPARK	1	// !!!!!!!!!!! TEMPORARY !!!!!!!!!
 
-#if defined(SPARK)
 #include "Adafruit_mfGFX/Adafruit_mfGFX.h"   // Core graphics library
 #include "RGBmatrixPanel.h" // Hardware-specific library
 #include "math.h"
-#else
-#include <avr/pgmspace.h>
-#include <Adafruit_GFX.h>   // Core graphics library
-#include <RGBmatrixPanel.h> // Hardware-specific library
+
+
+/** Define RGB matrix panel GPIO pins **/
+#if defined (STM32F10X_MD)	//Core
+	#define CLK D6
+	#define OE  D7
+	#define LAT A4
+	#define A   A0
+	#define B   A1
+	#define C   A2
+	#define D	A3		// Only used for 32x32 panels
 #endif
 
-#if defined(SPARK)
- #define CLK D6
- #define OE  D7
- #define LAT A3
- #define A   A0
- #define B   A1
- #define C   A2
-#else
- #define CLK 8  // MUST be on PORTB! (Use pin 11 on Mega)
- #define LAT A3
- #define OE  9
- #define A   A0
- #define B   A1
- #define C   A2
+#if defined (STM32F2XX)	//Photon
+	#define CLK D6
+	#define OE  D7
+	#define LAT A4
+	#define A   A0
+	#define B   A1
+	#define C   A2
+	#define D	A3		// Only used for 32x32 panels
 #endif
+/****************************************/
+
 
 // Last parameter = 'true' enables double-buffering, for flicker-free,
 // buttery smooth animation.  Note that NOTHING WILL SHOW ON THE DISPLAY
 // until the first call to swapBuffers().  This is normal.
 RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, true);
 
-static const int8_t PROGMEM sinetab[256] = {
+static const int8_t sinetab[256] = {
      0,   2,   5,   8,  11,  15,  18,  21,
     24,  27,  30,  33,  36,  39,  42,  45,
     48,  51,  54,  56,  59,  62,  65,  67,
@@ -102,10 +103,10 @@ void loop() {
     x1 = sx1; x2 = sx2; x3 = sx3; x4 = sx4;
     for(x=0; x<matrix.width(); x++) {
       value = hueShift
-        + (int8_t)pgm_read_byte(sinetab + (uint8_t)((x1 * x1 + y1 * y1) >> 4))
-        + (int8_t)pgm_read_byte(sinetab + (uint8_t)((x2 * x2 + y2 * y2) >> 4))
-        + (int8_t)pgm_read_byte(sinetab + (uint8_t)((x3 * x3 + y3 * y3) >> 5))
-        + (int8_t)pgm_read_byte(sinetab + (uint8_t)((x4 * x4 + y4 * y4) >> 5));
+        + (int8_t)sinetab[(uint8_t)((x1 * x1 + y1 * y1) >> 4)]
+        + (int8_t)sinetab[(uint8_t)((x2 * x2 + y2 * y2) >> 4)]
+        + (int8_t)sinetab[(uint8_t)((x3 * x3 + y3 * y3) >> 5)]
+        + (int8_t)sinetab[(uint8_t)((x4 * x4 + y4 * y4) >> 5)];
       matrix.drawPixel(x, y, matrix.ColorHSV(value * 3, 255, 255, true));
       x1--; x2--; x3--; x4--;
     }

@@ -1,21 +1,5 @@
-#define SPARK	1	// !!!!!!!!!!! TEMPORARY !!!!!!!!!
 
-#if defined(SPARK)
 #include "Adafruit_mfGFX/Adafruit_mfGFX.h"
-#define pgm_read_byte(addr) (*(const uint8_t *)(addr))
-#define PROGMEM
-#else
-#if ARDUINO >= 100
- #include "Arduino.h"
-#else
- #include "WProgram.h"
- #include "pins_arduino.h"
-#endif
-#include "Adafruit_GFX.h"
-#endif
-
-
-
 
 class RGBmatrixPanel : public Adafruit_GFX {
 
@@ -56,17 +40,7 @@ class RGBmatrixPanel : public Adafruit_GFX {
   void init(uint8_t rows, uint8_t a, uint8_t b, uint8_t c,
     uint8_t sclk, uint8_t latch, uint8_t oe, boolean dbuf);
 
-
-#if defined(SPARK)
   uint8_t	_sclk, _latch, _oe, _a, _b, _c, _d;
-#else
-  // PORT register pointers, pin bitmasks, pin numbers:
-  volatile uint8_t
-    *latport, *oeport, *addraport, *addrbport, *addrcport, *addrdport;
-  uint8_t
-    sclkpin, latpin, oepin, addrapin, addrbpin, addrcpin, addrdpin,
-    _sclk, _latch, _oe, _a, _b, _c, _d;
-#endif
 
   // Counters/pointers for interrupt handler:
   volatile uint8_t row, plane;
