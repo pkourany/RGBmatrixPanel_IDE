@@ -9,6 +9,9 @@ Adapted for Spark by Paul Kourany, June 2014
 
 Updated for Particle Photon, Sept 2015
 
+Updated Dec 2015 to properly support wide or daisychained panels with a "width" parameter.
+Thanks to Andrew Holmes (author of RGBPongClock) for this contribution!!
+
 
 Particle Photon Adaptation
 ---
@@ -26,6 +29,24 @@ write for the output which could be optimized using inline assembler.  As it
 stands the calculated refresh rate for a 16x32 panel using the bit-banged
 version is 90Hz while the (partial) port write version is 140Hz (half those
 values on 32x32 panel).
+
+Display configuration
+---
+The library supports 16 pixel high and 32 pixel high panels of any multiples
+of 32 pixels wide.  Adafruit sells 16x32, 32x32 and 64x32 panels fully compatible
+with the library.  Daisy chaining displays will also allow for wider configurations,
+limited only by available Core or Photon RAM.
+
+Constructor examples:
+
+`RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, true);` //16x32 panel, width is 32 by default if not specified
+
+`RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, true, 64);` //2 x 16x32 daisy chained = 16x64 panels
+
+`RGBmatrixPanel matrix(A, B, C, D,CLK, LAT, OE, true, 32);` //32x32 panel
+
+`RGBmatrixPanel matrix(A, B, C, D,CLK, LAT, OE, true, 64);` //64x32 panel
+
 
 Components Required
 ---
