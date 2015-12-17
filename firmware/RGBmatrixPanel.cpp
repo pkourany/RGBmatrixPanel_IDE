@@ -133,10 +133,10 @@ void RGBmatrixPanel::init(uint8_t rows, uint8_t a, uint8_t b, uint8_t c,
 // Constructor for 16x32 panel:
 RGBmatrixPanel::RGBmatrixPanel(
   uint8_t a, uint8_t b, uint8_t c,
-  uint8_t sclk, uint8_t latch, uint8_t oe, boolean dbuf) :
-  Adafruit_GFX(32, 16) {
+  uint8_t sclk, uint8_t latch, uint8_t oe, boolean dbuf, uint8_t width) :
+  Adafruit_GFX(width, 16) {
 
-  init(8, a, b, c, sclk, latch, oe, dbuf, 32);
+  init(8, a, b, c, sclk, latch, oe, dbuf, width);
 }
 
 // Constructor for 32x32 or 32x64 panel:
@@ -213,9 +213,6 @@ uint16_t RGBmatrixPanel::Color888(uint8_t r, uint8_t g, uint8_t b) {
 uint16_t RGBmatrixPanel::Color888(
   uint8_t r, uint8_t g, uint8_t b, boolean gflag) {
   if(gflag) { // Gamma-corrected color?
-    //r = pgm_read_byte(&gamma[r]); // Gamma correction table maps
-    //g = pgm_read_byte(&gamma[g]); // 8-bit input to 4-bit output
-    //b = pgm_read_byte(&gamma[b]);
     r = gamma[r]; // Gamma correction table maps
     g = gamma[g]; // 8-bit input to 4-bit output
     b = gamma[b];
@@ -257,9 +254,6 @@ uint16_t RGBmatrixPanel::ColorHSV(
   // to allow shifts, and upgrade to int makes other conversions implicit.
   v1 = val + 1;
   if(gflag) { // Gamma-corrected color?
-    //r = pgm_read_byte(&gamma[(r * v1) >> 8]); // Gamma correction table maps
-    //g = pgm_read_byte(&gamma[(g * v1) >> 8]); // 8-bit input to 4-bit output
-    //b = pgm_read_byte(&gamma[(b * v1) >> 8]);
     r = gamma[(r * v1) >> 8]; // Gamma correction table maps
     g = gamma[(g * v1) >> 8]; // 8-bit input to 4-bit output
     b = gamma[(b * v1) >> 8];
@@ -406,10 +400,6 @@ void refreshISR(void)
 {
   activePanel->updateDisplay();   // Call refresh func for active display
 }
-//ISR(TIMER1_OVF_vect, ISR_BLOCK) { // ISR_BLOCK important -- see notes later
-//  activePanel->updateDisplay();   // Call refresh func for active display
-//  TIFR1 |= TOV1;                  // Clear Timer1 interrupt flag
-//}
 
 // Two constants are used in timing each successive BCM interval.
 // These were found empirically, by checking the value of TCNT1 at
@@ -513,19 +503,12 @@ void RGBmatrixPanel::updateDisplay(void) {
     for (uint8_t i=0; i < WIDTH; i++) {
 
 #if defined (FASTER) && (defined(STM32F10X_MD) || !defined(PLATFORM_ID))
-
-	//for (uint8_t i=0; i < 32; i++) {
-
 		pins = (ptr[i] & 0xF8) | ((ptr[i] & 0x04) >> 2);		//Shift R1 to bit 0
 		GPIOB->BSRR = pins;
 		GPIOB->BRR = ~pins & 0xF9;
-
-		//PIN_MAP[_sclk].gpio_peripheral->BSRR = PIN_MAP[_sclk].gpio_pin;	//hi
-		//PIN_MAP[_sclk].gpio_peripheral->BRR = PIN_MAP[_sclk].gpio_pin;	//lo
 		pinSetFast(_sclk);
 		pinResetFast(_sclk);
 #else
-	//for (uint8_t i=0; i < WIDTH; i++) {
 		(ptr[i] & 0x04) ? pinSetFast(R1) : pinResetFast(R1); 	//R1
 		(ptr[i] & 0x08) ? pinSetFast(G1) : pinResetFast(G1);	//G1
 		(ptr[i] & 0x10) ? pinSetFast(B1) : pinResetFast(B1); 	//B1
@@ -537,7 +520,6 @@ void RGBmatrixPanel::updateDisplay(void) {
 #endif
 	}
 
-    //buffptr += 32;
     buffptr += WIDTH;
 
   } else {
@@ -552,13 +534,10 @@ void RGBmatrixPanel::updateDisplay(void) {
 		uint8_t bits = ( ptr[i] << 6) | ((ptr[i+WIDTH] << 4) & 0x30) | ((ptr[i+WIDTH*2] << 2) & 0x0C);
 
 #if defined (FASTER) && (defined(STM32F10X_MD) || !defined(PLATFORM_ID))
-
 		pins = (bits & 0xF8) | ((bits & 0x04) >> 2);		//Shift R1 to bit 0
 		GPIOB->BSRR = pins;
 		GPIOB->BRR = ~pins & 0xF9;
 
-		//PIN_MAP[_sclk].gpio_peripheral->BSRR = PIN_MAP[_sclk].gpio_pin;	//hi
-		//PIN_MAP[_sclk].gpio_peripheral->BRR = PIN_MAP[_sclk].gpio_pin;	//lo
 		pinSetFast(_sclk);
 		pinResetFast(_sclk);
 #else

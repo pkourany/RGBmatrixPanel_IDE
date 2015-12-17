@@ -1,3 +1,5 @@
+#ifndef RGBMatrixPanel_h
+#define RGBMatrixPanel_h
 
 #include "Adafruit_mfGFX/Adafruit_mfGFX.h"
 
@@ -7,7 +9,7 @@ class RGBmatrixPanel : public Adafruit_GFX {
 
   // Constructor for 16x32 panel:
   RGBmatrixPanel(uint8_t a, uint8_t b, uint8_t c,
-    uint8_t sclk, uint8_t latch, uint8_t oe, boolean dbuf);
+    uint8_t sclk, uint8_t latch, uint8_t oe, boolean dbuf, uint8_t width=32);
 
   // Constructor for 32x32 panel (adds 'd' pin):
   RGBmatrixPanel(uint8_t a, uint8_t b, uint8_t c, uint8_t d,
@@ -49,3 +51,5 @@ class RGBmatrixPanel : public Adafruit_GFX {
   volatile uint8_t row, plane;
   volatile uint8_t *buffptr;
 };
+
+#endif
