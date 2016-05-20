@@ -13,6 +13,7 @@ Updated Dec 2015 to properly support wide or daisychained panels with a "width" 
 Thanks to Andrew Holmes (author of RGBPongClock) for this contribution!!
 
 Confirmed compatible with Electron, May 2016
+Updated examples for new v4 RGBMatrixPanel shield pinout, May 2016
 
 
 Particle Photon Adaptation
