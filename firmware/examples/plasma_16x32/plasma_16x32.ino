@@ -12,25 +12,31 @@
 #include "math.h"
 
 
-/** Define RGB matrix panel GPIO pins **/
-#if defined (STM32F10X_MD)	//Core
-	#define CLK D6
-	#define OE  D7
-	#define LAT A4
-	#define A   A0
-	#define B   A1
-	#define C   A2
-	#define D	A3		// Only used for 32x32 panels
-#endif
+// Modify for version of RGBShieldMatrix that you have
+// HINT: Maker Faire 2016 Kit and later have shield version 4 (3 prior to that)
+//
+// NOTE: Version 4 of the RGBMatrix Shield only works with Photon and Electron (not Core)
+#define RGBSHIELDVERSION	4
 
-#if defined (STM32F2XX)	//Photon
-	#define CLK D6
-	#define OE  D7
-	#define LAT A4
-	#define A   A0
-	#define B   A1
-	#define C   A2
-	#define D	A3		// Only used for 32x32 panels
+/** Define RGB matrix panel GPIO pins **/
+#if (RGBSHIELDVERSION == 4)		// Newest shield with SD socket onboard
+	#warning "new shield"
+	#define CLK	D6
+	#define O	D7
+	#define LAT	TX
+	#define A  	A0
+	#define B  	A1
+	#define C  	A2
+	#define D	RX
+#else
+	#warning "old shield"
+	#define CLK	D6
+	#define OE 	D7
+	#define LAT	A4
+	#define A  	A0
+	#define B  	A1
+	#define C  	A2
+	#define D	A3
 #endif
 /****************************************/
 
