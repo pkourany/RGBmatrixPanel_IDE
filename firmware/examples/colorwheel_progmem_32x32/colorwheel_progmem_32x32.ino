@@ -18,7 +18,7 @@
 // HINT: Maker Faire 2016 Kit and later have shield version 4 (3 prior to that)
 //
 // NOTE: Version 4 of the RGBMatrix Shield only works with Photon and Electron (not Core)
-#define RGBSHIELDVERSION	4
+#define RGBSHIELDVERSION		4
 
 /** Define RGB matrix panel GPIO pins **/
 #if (RGBSHIELDVERSION == 4)		// Newest shield with SD socket onboard
