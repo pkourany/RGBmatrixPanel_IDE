@@ -176,7 +176,11 @@ void RGBmatrixPanel::begin(void) {
   pinMode(G2, OUTPUT); pinResetFast(G2);			//Low
   pinMode(B2, OUTPUT); pinResetFast(B2);			//Low
 
-  refreshTimer.begin(refreshISR, 200, uSec);
+#if defined (STM32F10X_MD) || !defined(PLATFORM_ID)		//Core
+  refreshTimer.begin(refreshISR, 200, uSec);		// Use allocated timer
+#else
+  refreshTimer.begin(refreshISR, 200, uSec, TIMER7);	// Use non-GPIO timer
+#endif
 }
 
 // Original RGBmatrixPanel library used 3/3/3 color.  Later version used
