@@ -24,7 +24,7 @@
 #if (RGBSHIELDVERSION == 4)		// Newest shield with SD socket onboard
 	#warning "new shield"
 	#define CLK	D6
-	#define O	D7
+	#define OE	D7
 	#define LAT	TX
 	#define A  	A0
 	#define B  	A1
