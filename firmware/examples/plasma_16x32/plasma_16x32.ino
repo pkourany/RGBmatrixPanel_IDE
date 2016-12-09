@@ -126,5 +126,7 @@ void loop() {
   hueShift += 2;
 
   matrix.swapBuffers(false);
+
+  delay(75);	// Slow down animation!
 }
 
