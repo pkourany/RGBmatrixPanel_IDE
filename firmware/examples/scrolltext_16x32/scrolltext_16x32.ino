@@ -98,4 +98,6 @@ void loop() {
 
   // Update display
   matrix.swapBuffers(false);
+
+  delay(75);	// Slow down animation!
 }
