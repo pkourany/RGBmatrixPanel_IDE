@@ -15,6 +15,8 @@ Thanks to Andrew Holmes (author of RGBPongClock) for this contribution!!
 Confirmed compatible with Electron, May 2016
 Updated examples for new v4 RGBMatrixPanel shield pinout, May 2016
 
+Add delay() in loop() to animation examples to improve effects, Dec 2016
+
 
 Particle Photon Adaptation
 ---
