@@ -121,5 +121,7 @@ void loop() {
   angle3 += 0.13;
   angle4 -= 0.15;
   hueShift += 2;
+
+  delay(75);	// Slow down animation!
 }
 
