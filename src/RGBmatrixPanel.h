@@ -1,7 +1,7 @@
 #ifndef RGBMatrixPanel_h
 #define RGBMatrixPanel_h
 
-#include "Adafruit_mfGFX/Adafruit_mfGFX.h"
+#include <Adafruit_mfGFX.h>
 
 class RGBmatrixPanel : public Adafruit_GFX {
 
