@@ -217,9 +217,9 @@ uint16_t RGBmatrixPanel::Color888(uint8_t r, uint8_t g, uint8_t b) {
 uint16_t RGBmatrixPanel::Color888(
   uint8_t r, uint8_t g, uint8_t b, boolean gflag) {
   if(gflag) { // Gamma-corrected color?
-    r = gamma[r]; // Gamma correction table maps
-    g = gamma[g]; // 8-bit input to 4-bit output
-    b = gamma[b];
+    r = rgbmatrixpanel_gamma[r]; // Gamma correction table maps
+    g = rgbmatrixpanel_gamma[g]; // 8-bit input to 4-bit output
+    b = rgbmatrixpanel_gamma[b];
     return ((uint16_t)r << 12) | ((uint16_t)(r & 0x8) << 8) | // 4/4/4->5/6/5
            ((uint16_t)g <<  7) | ((uint16_t)(g & 0xC) << 3) |
            (          b <<  1) | (           b        >> 3);
@@ -258,9 +258,9 @@ uint16_t RGBmatrixPanel::ColorHSV(
   // to allow shifts, and upgrade to int makes other conversions implicit.
   v1 = val + 1;
   if(gflag) { // Gamma-corrected color?
-    r = gamma[(r * v1) >> 8]; // Gamma correction table maps
-    g = gamma[(g * v1) >> 8]; // 8-bit input to 4-bit output
-    b = gamma[(b * v1) >> 8];
+    r = rgbmatrixpanel_gamma[(r * v1) >> 8]; // Gamma correction table maps
+    g = rgbmatrixpanel_gamma[(g * v1) >> 8]; // 8-bit input to 4-bit output
+    b = rgbmatrixpanel_gamma[(b * v1) >> 8];
   } else { // linear (uncorrected) color
     r = (r * v1) >> 12; // 4-bit results
     g = (g * v1) >> 12;
