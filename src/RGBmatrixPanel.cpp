@@ -33,6 +33,7 @@ Adafruit Industries.
 BSD license, all text above must be included in any redistribution.
 */
 
+
 #include <SparkIntervalTimer.h>
 #include "RGBmatrixPanel.h"
 #include "gamma.h"
@@ -51,38 +52,47 @@ BSD license, all text above must be included in any redistribution.
   #define pinResetFast(_pin)	PIN_MAP[_pin].gpio_peripheral->BRR = PIN_MAP[_pin].gpio_pin
 #endif
 
-#if defined (STM32F10X_MD) || !defined(PLATFORM_ID)		//Core
-#warning "CORE NEW"
-//  #define pinSetFast(_pin)		PIN_MAP[_pin].gpio_peripheral->BSRR = PIN_MAP[_pin].gpio_pin
-//  #define pinResetFast(_pin)	PIN_MAP[_pin].gpio_peripheral->BRR = PIN_MAP[_pin].gpio_pin
+#if defined (STM32F10X_MD) || !defined(PLATFORM_ID)	//Core
 
- #if defined(FASTER)		// Parital Port writes
+ #if defined(FASTER)	// Parital Port writes
   #define R1	A6		// bit 2 = RED 1
   #define G1	D4		// bit 3 = GREEN 1
   #define B1	D3		// bit 4 = BLUE 1
   #define R2	D2		// bit 5 = RED 2
   #define G2	D1		// bit 6 = GREEN 2
   #define B2	D0		// bit 7 = BLUE 2
-  static const uint16_t	dur[4] = {30, 60, 120, 240};
+  static uint16_t	dur[4][4] = {	{30, 60, 120, 240},		// 1 panel
+									{55, 110, 220, 440},
+									{60, 120, 240, 480},
+									{70, 140, 280, 560}};	// 4 panels
 
- #else  					// Bit banging
+ #else  				// Bit banging
   #define R1	D0		// bit 2 = RED 1
   #define G1	D1		// bit 3 = GREEN 1
   #define B1	D2		// bit 4 = BLUE 1
   #define R2	D3		// bit 5 = RED 2
   #define G2	D4		// bit 6 = GREEN 2
   #define B2	D5		// bit 7 = BLUE 2
-  static const uint16_t	dur[4] = {50, 100, 200, 400};
- #endif
-#elif defined (STM32F2XX)	//Photon
+  static uint16_t	dur[4][4] = {	{50, 100, 200, 400},	// 1 panel
+									{60, 120, 240, 480},
+									{70, 140, 280, 560},
+									{70, 140, 280, 560}};	// 4 panels
+  #endif
+#elif defined (STM32F2XX)							//Photon, Electron
   #define R1	D0		// bit 2 = RED 1
   #define G1	D1		// bit 3 = GREEN 1
   #define B1	D2		// bit 4 = BLUE 1
   #define R2	D3		// bit 5 = RED 2
   #define G2	D4		// bit 6 = GREEN 2
   #define B2	D5		// bit 7 = BLUE 2
-  static const uint16_t	dur[4] = {30, 60, 120, 240};
+  
+  static uint16_t	dur[4][4] = {	{30, 60, 120, 240},		// 1 panel
+									{55, 110, 220, 440},
+									{60, 120, 240, 480},
+									{70, 140, 280, 560}};	// 4 panels
 #endif
+
+static uint16_t numPanels;
 
 #define nPlanes 4
 
@@ -104,17 +114,20 @@ static RGBmatrixPanel *activePanel = NULL;
 
 // Code common to both the 16x32 and 32x32 constructors:
 void RGBmatrixPanel::init(uint8_t rows, uint8_t a, uint8_t b, uint8_t c,
-  uint8_t sclk, uint8_t latch, uint8_t oe, boolean dbuf, uint8_t width) {
+  uint8_t sclk, uint8_t latch, uint8_t oe, boolean dbuf, uint16_t width) {
 
   nRows = rows; // Number of multiplexed rows; actual height is 2X this
 
   // Allocate and initialize matrix buffer:
-  int buffsize  = width * nRows * 3, // x3 = 3 bytes holds 4 planes "packed"
+  uint32_t buffsize  = width * nRows * 3, // x3 = 3 bytes holds 4 planes "packed"
       allocsize = (dbuf == true) ? (buffsize * 2) : buffsize;
   if(NULL == (matrixbuff[0] = (uint8_t *)malloc(allocsize))) return;
   memset(matrixbuff[0], 0, allocsize);
   // If not double-buffered, both buffers then point to the same address:
   matrixbuff[1] = (dbuf == true) ? &matrixbuff[0][buffsize] : matrixbuff[0];
+  
+  // Adjust timing for number of panels (and therefore pixels) wide
+  numPanels = (width -1)/32;
 
   // Save pin numbers for use by begin() method later.
   _a     = a;
@@ -133,7 +146,7 @@ void RGBmatrixPanel::init(uint8_t rows, uint8_t a, uint8_t b, uint8_t c,
 // Constructor for 16x32 panel:
 RGBmatrixPanel::RGBmatrixPanel(
   uint8_t a, uint8_t b, uint8_t c,
-  uint8_t sclk, uint8_t latch, uint8_t oe, boolean dbuf, uint8_t width) :
+  uint8_t sclk, uint8_t latch, uint8_t oe, boolean dbuf, uint16_t width) :
   Adafruit_GFX(width, 16) {
 
   init(8, a, b, c, sclk, latch, oe, dbuf, width);
@@ -142,7 +155,7 @@ RGBmatrixPanel::RGBmatrixPanel(
 // Constructor for 32x32 or 32x64 panel:
 RGBmatrixPanel::RGBmatrixPanel(
   uint8_t a, uint8_t b, uint8_t c, uint8_t d,
-  uint8_t sclk, uint8_t latch, uint8_t oe, boolean dbuf, uint8_t width) :
+  uint8_t sclk, uint8_t latch, uint8_t oe, boolean dbuf, uint16_t width) :
   Adafruit_GFX(width, 32) {
 
   init(16, a, b, c, sclk, latch, oe, dbuf, width);
@@ -175,12 +188,8 @@ void RGBmatrixPanel::begin(void) {
   pinMode(R2, OUTPUT); pinResetFast(R2);			//Low
   pinMode(G2, OUTPUT); pinResetFast(G2);			//Low
   pinMode(B2, OUTPUT); pinResetFast(B2);			//Low
-
-#if defined (STM32F10X_MD) || !defined(PLATFORM_ID)		//Core
-  refreshTimer.begin(refreshISR, 200, uSec);		// Use allocated timer
-#else
-  refreshTimer.begin(refreshISR, 200, uSec, TIMER7);	// Use non-GPIO timer
-#endif
+  
+  refreshTimer.begin(refreshISR, 200, uSec);
 }
 
 // Original RGBmatrixPanel library used 3/3/3 color.  Later version used
@@ -274,7 +283,7 @@ uint16_t RGBmatrixPanel::ColorHSV(
 void RGBmatrixPanel::drawPixel(int16_t x, int16_t y, uint16_t c) {
   uint8_t r, g, b, bit, limit, *ptr;
 
-  if((x < 0) || (x >= _width) || (y < 0) || (y >= _height)) return;
+  if((x < 0) || (x >= width()) || (y < 0) || (y >= height())) return;
 
   switch(rotation) {
    case 1:
@@ -382,7 +391,7 @@ void RGBmatrixPanel::swapBuffers(boolean copy) {
 // back into the display using a pgm_read_byte() loop.
 void RGBmatrixPanel::dumpMatrix(void) {
 
-  int i, buffsize = WIDTH * nRows * 3;
+  uint32_t i, buffsize = WIDTH * nRows * 3;
 
   Serial.print(F("\n\n"
     "static const uint8_t PROGMEM img[] = {\n  "));
@@ -398,6 +407,8 @@ void RGBmatrixPanel::dumpMatrix(void) {
   }
   Serial.println(F("\n};"));
 }
+
+
 
 // -------------------- Interrupt handler stuff --------------------
 void refreshISR(void)
@@ -459,8 +470,8 @@ void RGBmatrixPanel::updateDisplay(void) {
   pinResetFast(_sclk);		// Start the clock LOW
 
   // Get the time to next interrupt
-  duration = dur[plane];
-
+  duration = dur[numPanels][plane];
+ 
   // Borrowing a technique here from Ray's Logic:
   // www.rayslogic.com/propeller/Programming/AdafruitRGB/AdafruitRGB.htm
   // This code cycles through all four planes for each scanline before
@@ -504,7 +515,7 @@ void RGBmatrixPanel::updateDisplay(void) {
   if(plane > 0) {
 
     // Planes 1-3 must be unpacked and bit-banged
-    for (uint8_t i=0; i < WIDTH; i++) {
+    for (i=0; i < WIDTH; i++) {
 
 #if defined (FASTER) && (defined(STM32F10X_MD) || !defined(PLATFORM_ID))
 		pins = (ptr[i] & 0xF8) | ((ptr[i] & 0x04) >> 2);		//Shift R1 to bit 0
@@ -527,16 +538,15 @@ void RGBmatrixPanel::updateDisplay(void) {
     buffptr += WIDTH;
 
   } else {
-
     // Plane 0 has its data packed into the 2 least bits not
     // used by the other planes.  This works because the unpacking and
     // output for plane 0 is handled while plane 3 is being displayed...
     // because binary coded modulation is used (not PWM), that plane
     // has the longest display interval, so the extra work fits.
 
-	for(i=0; i<WIDTH; i++) {
+	for(i=0; i < WIDTH; i++) {
 		uint8_t bits = ( ptr[i] << 6) | ((ptr[i+WIDTH] << 4) & 0x30) | ((ptr[i+WIDTH*2] << 2) & 0x0C);
-
+		
 #if defined (FASTER) && (defined(STM32F10X_MD) || !defined(PLATFORM_ID))
 		pins = (bits & 0xF8) | ((bits & 0x04) >> 2);		//Shift R1 to bit 0
 		GPIOB->BSRR = pins;
@@ -552,8 +562,9 @@ void RGBmatrixPanel::updateDisplay(void) {
 		(bits & 0x40) ? pinSetFast(G2) : pinResetFast(G2);		//G2
 		(bits & 0x80) ? pinSetFast(B2) : pinResetFast(B2);		//B2
 		pinSetFast(_sclk);		//hi
-		pinResetFast(_sclk);		//lo
+		pinResetFast(_sclk);	//lo
 #endif
     }
   }
 }
+
