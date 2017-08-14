@@ -64,20 +64,20 @@ Wiring between the Spark and 16x32 or 32x32 display is as follows:
 ```
 Panel Pin	Core Pin	Photon/Electron Pin
 --------------------------------------
-  GND			GND			GND		
-  CLK 			D6          D6		// Specified in constructor
-  OE  			D7          D7		// Specified in constructor
-  LAT 			A4          A4		// Specified in constructor
-  A   			A0          A0		// Specified in constructor
-  B   			A1          A1		// Specified in constructor
-  C   			A2          A2		// Specified in constructor
-  D				A3			A3		// 32x32 display only - Specified in constructor
-  R1			D0			D0		
-  G1			D1			D1		
-  B1			D2			D2		
-  R2			D3			D3		
-  G2			D4			D4		
-  B2			D5			D5		
+  GND			GND		GND		
+  CLK			D6		D6		// Specified in constructor
+  OE			D7		D7		// Specified in constructor
+  LAT			A4		A4		// Specified in constructor
+  A			A0		A0		// Specified in constructor
+  B			A1		A1		// Specified in constructor
+  C			A2		A2		// Specified in constructor
+  D			A3		A3		// 32x32 display only - Specified in constructor
+  R1			D0		D0		
+  G1			D1		D1		
+  B1			D2		D2		
+  R2			D3		D3		
+  G2			D4		D4		
+  B2			D5		D5		
 ```
 
 The display needs its own 5V supply.
