@@ -1,4 +1,6 @@
 
+#pragma once
+
 #include "Adafruit_mfGFX.h"
 
 class RGBmatrixPanel : public Adafruit_GFX {
